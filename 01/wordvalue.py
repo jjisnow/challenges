@@ -7,6 +7,8 @@ def load_words():
         words = f.read().split('\n')
     words = list(filter(lambda x: x != '', words))
     # another approach is to use words = [word.strip() for word in words]
+    # this needs split to be called with no arguments
+    # - it strips whitespace as well as splits runs of white blanks
     return words
 
 
