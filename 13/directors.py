@@ -17,10 +17,14 @@ def get_movies_by_director():
         reader = csv.DictReader(f)
         final_dict = {}
         for line in reader:
-            final_dict.setdefault(line['director_name'], []).append(
-                Movie(line['movie_title'],
-                      line['title_year'],
-                      line['imdb_score']))
+            try:
+                if int(line['title_year']) >= MIN_YEAR:
+                    final_dict.setdefault(line['director_name'], []).append(
+                        Movie(line['movie_title'],
+                              line['title_year'],
+                              line['imdb_score']))
+            except ValueError:
+                continue
     return final_dict
 
 
@@ -30,9 +34,11 @@ def get_average_scores(directors):
 
     director_averages = {}
     for director in valid_directors:
-        if directors[director]:
-            new_key = (director, _calc_mean(directors[director]))
-            director_averages[new_key] = directors[director]
+        movies_list = directors[director]
+        if movies_list:
+            new_key = (director, _calc_mean(movies_list))
+            director_averages[new_key] = movies_list
+            # director_averages[new_key] = directors[director]
             # director_averages[director] = statistics.mean(
             #     float(movie.score) for movie in directors[director])
 
@@ -41,8 +47,10 @@ def get_average_scores(directors):
 
 def _calc_mean(movies):
     '''Helper method to calculate mean of list of Movie namedtuples'''
-    return round(statistics.mean(float(movie.score) for movie in movies), 1)
+    # return round(statistics.mean(float(movie.score) for movie in movies), 1)
 
+    ratings = [float(movie.score) for movie in movies]
+    return round(sum(ratings) / max(1, len(ratings)), 1)
 
 def print_results(directors):
     '''Print directors ordered by highest average rating. For each director
@@ -54,7 +62,7 @@ def print_results(directors):
     movies = get_movies_by_director()
 
     directors = OrderedDict(
-        sorted(directors.items(), key=lambda x: x[1], reverse=True))
+        sorted(directors.items(), key=lambda x: x[0][1], reverse=True))
     for i, record in enumerate(directors, start=1):
         print(fmt_director_entry.format(counter=i, director=record[0],
                                         avg=record[1]))
