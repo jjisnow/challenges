@@ -54,7 +54,8 @@ def _calc_mean(movies):
     # return round(statistics.mean(float(movie.score) for movie in movies), 1)
 
     ratings = [float(movie.score) for movie in movies]
-    return round(sum(ratings) / max(1, len(ratings)), 1)
+    divisor = max(1, len(ratings))
+    return round(sum(ratings) / divisor, 1)
 
 
 def print_results(directors):
@@ -73,16 +74,14 @@ def print_results(directors):
 
     directors = OrderedDict(
         sorted(directors.items(), key=lambda x: x[0][1], reverse=True))
-    for i, record in enumerate(directors, start=1):
-        print(fmt_director_entry.format(counter=i, director=record[0],
-                                        avg=record[1]))
+    for counter, (director,avg) in enumerate(directors, start=1):
+        print(f'{counter}. {director:<52} {avg:.1f}')
         print(sep_line)
-        for movie in directors[record]:
-            print(fmt_movie_entry.format(year=movie.year, title=movie.title,
-                                         score=movie.score))
+        for movie in directors[(director,avg)]:
+            print(f'{movie.year}] {movie.title:<50} {movie.score}')
         print()
 
-        if i == NUM_TOP_DIRECTORS:
+        if counter == NUM_TOP_DIRECTORS:
             break
 
 
