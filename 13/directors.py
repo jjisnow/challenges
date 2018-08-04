@@ -31,7 +31,8 @@ def get_average_scores(directors):
     director_averages = {}
     for director in valid_directors:
         if directors[director]:
-            director_averages[director] = _calc_mean(directors[director])
+            new_key = (director, _calc_mean(directors[director]))
+            director_averages[new_key] = directors[director]
             # director_averages[director] = statistics.mean(
             #     float(movie.score) for movie in directors[director])
 
@@ -55,10 +56,10 @@ def print_results(directors):
     directors = OrderedDict(
         sorted(directors.items(), key=lambda x: x[1], reverse=True))
     for i, record in enumerate(directors, start=1):
-        print(fmt_director_entry.format(counter=i, director=record,
-                                        avg=directors[record]))
+        print(fmt_director_entry.format(counter=i, director=record[0],
+                                        avg=record[1]))
         print(sep_line)
-        for movie in movies[record]:
+        for movie in movies[record[0]]:
             print(fmt_movie_entry.format(year=movie.year, title=movie.title,
                                          score=movie.score))
         print()
