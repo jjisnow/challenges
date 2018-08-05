@@ -17,7 +17,8 @@ def uppercase(func):
 
 
 def sleep_decorator(func):
-    '''Decorator that sleeps n seconds, passes through args'''
+    '''Decorator that sleeps n seconds, passes through args
+    Also called a 'rate-limiting' decorator'''
     interval = 0.1
 
     @wraps(func)
@@ -47,7 +48,10 @@ def log(func):
     return wrapper
 
 def cached(function_to_decorate):
-    '''Decorator to cache results of function'''
+    '''Decorator to cache results of function
+    This is also called 'memoisation'
+    There is an existing decorator that does something similar LRUcache
+    '''
     _cache = {} # Where we keep the results
     @wraps(function_to_decorate)
     def decorated_function(*args):
