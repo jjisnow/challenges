@@ -1,4 +1,6 @@
+import functools
 import logging
+import time
 from functools import wraps
 from time import sleep
 from timeit import timeit
@@ -65,10 +67,22 @@ def long_loop(arg):
     if arg == 1:
         return "-".join(map(str, range(100)))
     if arg == 2:
-        return "-".join(str(i) for i in range(100))
-    if arg == 3:
         return "-".join([str(i) for i in range(100)])
+    if arg == 3:
+        return "-".join(str(i) for i in range(100))
 
+def timer(fn):
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        for i in range(9999):
+            fn(*args, **kwargs)
+        return_value = fn(*args, **kwargs)
+        end = time.time()
+        print(f'function name: {fn.__name__}')
+        print(f'---- {end-start:.6f} seconds ----')
+        return return_value
+    return wrapper
 
 if __name__ == '__main__':
     print('1. Printing "hello world" to upper with decorator:')
@@ -86,6 +100,7 @@ if __name__ == '__main__':
     print('3. decorate with adding a logger')
     print(hey2())
 
+    print()
     print('4. using timeit in lieu of a decorator')
     print(timeit('long_loop(1)', number=10000,
                  setup="from __main__ import long_loop"))
@@ -93,3 +108,9 @@ if __name__ == '__main__':
                  setup="from __main__ import long_loop"))
     print(timeit('long_loop(3)', number=10000,
                  setup="from __main__ import long_loop"))
+
+    print()
+    print('5. using a timer decorator')
+    for i in range(1,4):
+        timed_fn = timer(long_loop)
+        timed_fn(i)
