@@ -46,6 +46,18 @@ def log(func):
 
     return wrapper
 
+def cached(function_to_decorate):
+    '''Decorator to cache results of function'''
+    _cache = {} # Where we keep the results
+    @wraps(function_to_decorate)
+    def decorated_function(*args):
+        start_time = time.time()
+        # print('_cache:', _cache)
+        if args not in _cache:
+            _cache[args] = function_to_decorate(*args) # Perform the computation and store it in cache
+        # print('Compute time: %ss' % round(time.time() - start_time, 2))
+        return _cache[args]
+    return decorated_function
 
 @uppercase
 def hello_world():
@@ -72,6 +84,7 @@ def long_loop(arg):
         return "-".join(str(i) for i in range(100))
 
 def timer(fn):
+    '''Decorator that repeats a function 10000 times then prints time taken'''
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
         start = time.time()
@@ -83,6 +96,8 @@ def timer(fn):
         print(f'---- {end-start:.6f} seconds ----')
         return return_value
     return wrapper
+
+
 
 if __name__ == '__main__':
     print('1. Printing "hello world" to upper with decorator:')
@@ -113,4 +128,10 @@ if __name__ == '__main__':
     print('5. using a timer decorator')
     for i in range(1,4):
         timed_fn = timer(long_loop)
+        timed_fn(i)
+
+    print()
+    print('6. using a cached timer decorator, which is also logged')
+    for i in range(1, 4):
+        timed_fn = log(timer(cached(long_loop)))
         timed_fn(i)
