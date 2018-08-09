@@ -38,3 +38,4 @@ def test_match_ip_address():
         assert match_ip_v4_address(valid_ip)
     for bad_ip in bad_ips:
         assert match_ip_v4_address(bad_ip) is None
+
