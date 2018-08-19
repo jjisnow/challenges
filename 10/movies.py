@@ -3,6 +3,8 @@ import re
 
 MOVIE_TITLE = re.compile(r'\d+\.\s+(.*)\s\(.*').sub
 
+def __init__():
+    pass
 
 def get_movie():
     """Source 100 movies: 
